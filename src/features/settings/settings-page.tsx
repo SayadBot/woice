@@ -40,14 +40,7 @@ export function SettingsPage() {
 
   const form = useForm({
     resolver: zodResolver(settingsSchema),
-    defaultValues: {
-      groqApiKey: settings.groqApiKey,
-      hotkey: settings.hotkey,
-      language: settings.language,
-      whisperModel: settings.whisperModel,
-      ignoreClipboard: settings.ignoreClipboard,
-      useEnv: settings.useEnv,
-    },
+    defaultValues: settings,
   })
 
   function triggerSubmit() {
