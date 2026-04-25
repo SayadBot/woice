@@ -19,7 +19,7 @@ pub async fn run<R: Runtime>(
     return ModeRunOutput {
       transcription_model: model.to_string(),
       transcription_output: String::new(),
-      transcription_error: Some("Groq API key is not configured".to_string()),
+      transcription_error: Some("API key is not configured".to_string()),
       final_text: String::new(),
       transcription_started_at: None,
       transcription_completed_at: None,
@@ -80,22 +80,22 @@ async fn transcribe_with_groq(
     .multipart(form)
     .send()
     .await
-    .map_err(|e| format!("Groq API request failed: {}", e))?;
+    .map_err(|e| format!("API request failed: {}", e))?;
 
   if !response.status().is_success() {
     let status = response.status();
     let body = response.text().await.unwrap_or_default();
-    return Err(format!("Groq API error {}: {}", status, body));
+    return Err(format!("API error {}: {}", status, body));
   }
 
   let json: serde_json::Value = response
     .json()
     .await
-    .map_err(|e| format!("Failed to parse Groq response: {}", e))?;
+    .map_err(|e| format!("Failed to parse response: {}", e))?;
 
   json
     .get("text")
     .and_then(|v| v.as_str())
     .map(|s| s.to_string())
-    .ok_or_else(|| "Groq response missing 'text' field".to_string())
+    .ok_or_else(|| "Response missing 'text' field".to_string())
 }

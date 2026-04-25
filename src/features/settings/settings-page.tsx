@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { LANGUAGES } from '@/constants/languages'
-import { GROQ_MODELS } from '@/constants/models'
 import { settingsSchema } from '@/store/config-store'
 import { useConfigStore } from '@/store/config-store/use-config-store'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -129,10 +128,8 @@ export function SettingsPage() {
                           triggerSubmit()
                         }}
                       />
-                      <span className="text-sm">
-                        {GROQ_MODELS.find((m) => m.id === field.value)?.name ??
-                          field.value}
-                      </span>
+
+                      <span className="text-sm">Turbo</span>
                     </label>
                   </FormControl>
                   <FormMessage />
