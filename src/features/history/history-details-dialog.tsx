@@ -1,12 +1,11 @@
-import { Badge } from '@/components/ui/badge'
 import {
   BetterDialog,
   BetterDialogContent,
 } from '@/components/ui/better-dialog'
 import { GROQ_MODELS } from '@/constants/models'
 import {
-  CheckmarkCircle01Icon,
   CancelCircleIcon,
+  CheckmarkCircle01Icon,
   TimeScheduleIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -82,21 +81,7 @@ function getRecordStatus(record: HistoryRecord): string {
   return 'Pending'
 }
 
-function getBadgeVariant(
-  value: string
-): 'default' | 'secondary' | 'destructive' | 'outline' {
-  if (value === 'Failed') return 'destructive'
-  if (value === 'Completed') return 'secondary'
-  return 'outline'
-}
-
-function DetailField({
-  label,
-  value,
-}: {
-  label: string
-  value: string
-}) {
+function DetailField({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <p className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase">
@@ -110,7 +95,7 @@ function DetailField({
 function Timeline({ steps }: { steps: TimelineStep[] }) {
   return (
     <div className="relative">
-      <div className="absolute top-2 bottom-2 left-[5px] w-px bg-border" />
+      <div className="bg-border absolute top-2 bottom-2 left-[5px] w-px" />
       <div className="space-y-0">
         {steps.map((step) => {
           const start = toMs(step.start)
@@ -124,17 +109,17 @@ function Timeline({ steps }: { steps: TimelineStep[] }) {
                 {state === 'Completed' && (
                   <HugeiconsIcon
                     icon={CheckmarkCircle01Icon}
-                    className="size-3 text-muted-foreground"
+                    className="text-muted-foreground size-3"
                   />
                 )}
                 {state === 'Running' && (
                   <HugeiconsIcon
                     icon={TimeScheduleIcon}
-                    className="size-3 text-primary animate-pulse"
+                    className="text-primary size-3 animate-pulse"
                   />
                 )}
                 {state === 'Not started' && (
-                  <div className="size-3 rounded-full border border-muted-foreground/40" />
+                  <div className="border-muted-foreground/40 size-3 rounded-full border" />
                 )}
               </div>
               <div className="min-w-0 flex-1">
@@ -202,70 +187,56 @@ function HistoryDetailsDialogContent({ record }: { record: HistoryRecord }) {
       title="Transcription Details"
       description={<>Recorded at {formatTimestamp(record.completed_at)}</>}
     >
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant={getBadgeVariant(recordStatus)}>{recordStatus}</Badge>
-          <Badge variant="outline">{formatText(record.language)}</Badge>
+      <div className="space-y-5">
+        <div>
+          <div className="mb-1.5 flex items-center justify-between">
+            <h4 className="text-sm font-medium">Transcription Output</h4>
+            {transcriptionOutput === '-' && (
+              <span className="text-muted-foreground text-xs">Empty</span>
+            )}
+          </div>
+          {transcriptionError !== '-' ? (
+            <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700 dark:border-red-950 dark:bg-red-950/30 dark:text-red-300">
+              <HugeiconsIcon
+                icon={CancelCircleIcon}
+                className="mt-0.5 size-4 shrink-0"
+              />
+              <span className="break-words">{transcriptionError}</span>
+            </div>
+          ) : (
+            <div className="bg-muted/40 max-h-64 overflow-auto rounded-lg border px-3.5 py-3 text-sm break-words whitespace-pre-wrap">
+              {transcriptionOutput}
+            </div>
+          )}
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-[1fr_16rem]">
-          <div className="space-y-4">
-            {transcriptionError !== '-' && (
-              <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700 dark:border-red-950 dark:bg-red-950/30 dark:text-red-300">
-                <HugeiconsIcon
-                  icon={CancelCircleIcon}
-                  className="mt-0.5 size-4 shrink-0"
-                />
-                <span className="break-words">{transcriptionError}</span>
-              </div>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
+          <DetailField label="Status" value={recordStatus} />
+          <DetailField label="Language" value={formatText(record.language)} />
+          <DetailField
+            label="Duration"
+            value={formatDuration(
+              getStepDuration(
+                toMs(record.started_at),
+                toMs(record.completed_at)
+              )
             )}
+          />
+          <DetailField
+            label="Started"
+            value={formatTimestamp(record.started_at)}
+          />
+          <DetailField
+            label="Completed"
+            value={formatTimestamp(record.completed_at)}
+          />
+          <DetailField label="Model" value={formatText(modelName)} />
+          <DetailField label="Input" value={formatText(record.input_audio)} />
+        </div>
 
-            <div>
-              <div className="mb-1.5 flex items-center justify-between">
-                <h4 className="text-sm font-medium">Transcription Output</h4>
-                {transcriptionOutput === '-' && (
-                  <Badge variant="outline" className="text-[10px]">
-                    Empty
-                  </Badge>
-                )}
-              </div>
-              <div className="bg-muted/40 max-h-64 overflow-auto rounded-lg border px-3.5 py-3 text-sm break-words whitespace-pre-wrap">
-                {transcriptionOutput}
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-5">
-            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-              <DetailField
-                label="Duration"
-                value={formatDuration(
-                  getStepDuration(
-                    toMs(record.started_at),
-                    toMs(record.completed_at)
-                  )
-                )}
-              />
-              <DetailField
-                label="Started"
-                value={formatTimestamp(record.started_at)}
-              />
-              <DetailField
-                label="Completed"
-                value={formatTimestamp(record.completed_at)}
-              />
-              <DetailField label="Model" value={formatText(modelName)} />
-              <DetailField
-                label="Input"
-                value={formatText(record.input_audio)}
-              />
-            </div>
-
-            <div>
-              <h4 className="mb-2 text-sm font-medium">Timeline</h4>
-              <Timeline steps={timelineSteps} />
-            </div>
-          </div>
+        <div>
+          <h4 className="mb-2 text-sm font-medium">Timeline</h4>
+          <Timeline steps={timelineSteps} />
         </div>
       </div>
     </BetterDialogContent>

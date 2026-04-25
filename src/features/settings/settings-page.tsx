@@ -104,10 +104,8 @@ export function SettingsPage() {
                           value={languageOption.code}
                         >
                           {languageOption.country ? (
-                            <img
-                              className="h-3.5 w-4 object-contain"
-                              src={`https://flagcdn.com/${languageOption.country}.svg`}
-                              alt={languageOption.name}
+                            <span
+                              className={`fi fi-${languageOption.country} text-[0.8rem]`}
                             />
                           ) : (
                             <HugeiconsIcon

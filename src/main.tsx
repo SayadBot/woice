@@ -1,6 +1,8 @@
 import './styles/fonts.css'
 import './styles/index.css'
 
+import 'flag-icons/css/flag-icons.min.css'
+
 import { QueryClientProvider } from '@tanstack/react-query'
 import ReactDOM from 'react-dom/client'
 import { App } from './app'
