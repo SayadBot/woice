@@ -21,7 +21,7 @@ export function DeleteHistoryButton() {
 
   const deleteAllHistory = useMutation({
     mutationFn: async () => {
-      const db = Database.get('sqlite:qoice.db')
+      const db = Database.get('sqlite:woice.db')
       await db.execute('DELETE FROM history')
     },
     onSuccess: async () => {

@@ -47,7 +47,7 @@ export function HistoryPage() {
     refetchInterval: 1000,
     queryKey: HISTORY_QUERY_KEY,
     queryFn: async (): Promise<HistoryRecord[]> => {
-      const db = Database.get('sqlite:qoice.db')
+      const db = Database.get('sqlite:woice.db')
       return db.select<HistoryRecord[]>(
         'SELECT * FROM history ORDER BY started_at DESC'
       )

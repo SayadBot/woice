@@ -74,7 +74,7 @@ pub(super) fn begin_recording<R: Runtime>(
   let user_config = load_user_config(app)?;
 
   let groq_api_key = if user_config.settings.use_env {
-    std::env::var("QOICE_API_KEY")
+    std::env::var("WOICE_API_KEY")
       .or_else(|_| std::env::var("GROQ_API_KEY"))
       .unwrap_or_default()
   } else {

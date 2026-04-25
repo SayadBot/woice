@@ -58,7 +58,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'Qoice ${{ github.ref_name }}'
+          releaseName: 'Woice ${{ github.ref_name }}'
           releaseBody: |
             ## Installation
 

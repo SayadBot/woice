@@ -227,7 +227,7 @@ export function SettingsPage() {
                     <FormLabel className="text-sm">Auto start</FormLabel>
 
                     <FormDescription className="text-xs">
-                      Start Qoice automatically on system startup
+                      Start Woice automatically on system startup
                     </FormDescription>
                   </div>
                   <FormControl>

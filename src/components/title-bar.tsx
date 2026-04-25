@@ -57,8 +57,8 @@ export function TitleBar() {
       className="bg-background flex items-center justify-between border-b"
     >
       <div className="flex flex-1 items-center gap-2 px-3">
-        <img src="/logo.svg" alt="Qoice" className="size-4" />
-        <span className="text-xs font-medium">Qoice</span>
+        <img src="/logo.svg" alt="Woice" className="size-4" />
+        <span className="text-xs font-medium">Woice</span>
       </div>
 
       <div

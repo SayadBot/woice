@@ -17,8 +17,8 @@ pub fn create_tray<R: Runtime>(app: &AppHandle<R>, _state: Arc<AppState>) -> tau
 
   let menu = Menu::with_items(app, &[&show_i, &hide_i, &quit_i])?;
 
-  let mut builder = TrayIconBuilder::with_id("qoice")
-    .tooltip("Qoice")
+  let mut builder = TrayIconBuilder::with_id("woice")
+    .tooltip("Woice")
     .menu(&menu)
     .show_menu_on_left_click(false);
 

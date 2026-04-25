@@ -31,7 +31,7 @@ pub fn run() {
     .plugin(tauri_plugin_autostart::Builder::new().build())
     .plugin(
       tauri_plugin_sql::Builder::default()
-        .add_migrations("sqlite:qoice.db", migrations::get_migrations())
+        .add_migrations("sqlite:woice.db", migrations::get_migrations())
         .build(),
     )
     .plugin(tauri_plugin_fs::init())
@@ -40,8 +40,8 @@ pub fn run() {
       use tauri_plugin_dialog::DialogExt;
       app
         .dialog()
-        .message("Qoice is already running.\n\nOnly one instance of Qoice can run at a time.")
-        .title("Qoice")
+        .message("Woice is already running.\n\nOnly one instance of Woice can run at a time.")
+        .title("Woice")
         .show(|_| {});
     }))
     .plugin(tauri_plugin_autostart::init(

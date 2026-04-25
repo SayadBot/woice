@@ -3809,40 +3809,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "qoice"
-version = "0.0.0"
-dependencies = [
- "accessibility",
- "accessibility-sys",
- "active-win-pos-rs",
- "arboard",
- "atspi",
- "chrono",
- "core-foundation 0.10.1",
- "core-foundation-sys",
- "cpal",
- "enigo",
- "reqwest 0.12.28",
- "rodio",
- "rustfft",
- "serde",
- "serde_json",
- "sqlx",
- "tauri",
- "tauri-build",
- "tauri-plugin-autostart",
- "tauri-plugin-dialog",
- "tauri-plugin-fs",
- "tauri-plugin-global-shortcut",
- "tauri-plugin-opener",
- "tauri-plugin-single-instance",
- "tauri-plugin-sql",
- "uiautomation",
- "uuid",
- "windows 0.58.0",
-]
-
-[[package]]
 name = "quick-error"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7310,6 +7276,40 @@ dependencies = [
  "serde_json",
  "unicode-xid",
  "wasmparser",
+]
+
+[[package]]
+name = "woice"
+version = "0.0.0"
+dependencies = [
+ "accessibility",
+ "accessibility-sys",
+ "active-win-pos-rs",
+ "arboard",
+ "atspi",
+ "chrono",
+ "core-foundation 0.10.1",
+ "core-foundation-sys",
+ "cpal",
+ "enigo",
+ "reqwest 0.12.28",
+ "rodio",
+ "rustfft",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-autostart",
+ "tauri-plugin-dialog",
+ "tauri-plugin-fs",
+ "tauri-plugin-global-shortcut",
+ "tauri-plugin-opener",
+ "tauri-plugin-single-instance",
+ "tauri-plugin-sql",
+ "uiautomation",
+ "uuid",
+ "windows 0.58.0",
 ]
 
 [[package]]

@@ -40,7 +40,7 @@ impl Database {
     let instances = app.state::<DbInstances>();
     let guard = instances.0.read().await;
     let pool = guard
-      .get("sqlite:qoice.db")
+      .get("sqlite:woice.db")
       .ok_or("Database connection not initialized")?;
     match pool {
       DbPool::Sqlite(pool) => Ok(pool.clone()),
