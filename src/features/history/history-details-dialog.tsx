@@ -1,14 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
 import {
   BetterDialog,
   BetterDialogContent,
 } from '@/components/ui/better-dialog'
-import { GROQ_MODELS } from '@/constants/models'
 import { LANGUAGES } from '@/constants/languages'
-import { readFile, BaseDirectory } from '@tauri-apps/plugin-fs'
-import { revealItemInDir } from '@tauri-apps/plugin-opener'
-import { appDataDir, resolve } from '@tauri-apps/api/path'
+import { GROQ_MODELS } from '@/constants/models'
 import {
   CancelCircleIcon,
   CheckmarkCircle01Icon,
@@ -18,7 +13,12 @@ import {
   TimeScheduleIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { appDataDir, resolve } from '@tauri-apps/api/path'
+import { BaseDirectory, readFile } from '@tauri-apps/plugin-fs'
+import { revealItemInDir } from '@tauri-apps/plugin-opener'
 import { format } from 'date-fns'
+import type { ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { HistoryRecord } from './types.t'
 
 type HistoryDetailsDialogProps = {
