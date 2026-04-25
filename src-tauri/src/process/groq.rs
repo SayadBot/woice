@@ -63,7 +63,7 @@ async fn transcribe_with_groq(
 ) -> Result<String, String> {
   let client = reqwest::Client::new();
 
-  let form = reqwest::multipart::Form::new()
+  let mut form = reqwest::multipart::Form::new()
     .part(
       "file",
       reqwest::multipart::Part::bytes(wav_bytes)
@@ -71,8 +71,11 @@ async fn transcribe_with_groq(
         .mime_str("audio/wav")
         .map_err(|e| e.to_string())?,
     )
-    .text("model", model.to_string())
-    .text("language", language.to_string());
+    .text("model", model.to_string());
+
+  if !language.is_empty() && language != "auto" {
+    form = form.text("language", language.to_string());
+  }
 
   let response = client
     .post("https://api.groq.com/openai/v1/audio/transcriptions")
