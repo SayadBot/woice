@@ -1,6 +1,6 @@
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_os = "linux")))]
 use arboard::Clipboard;
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(target_os = "linux"))]
 use enigo::{Direction, Enigo, Key, Keyboard, Settings};
 
 pub fn inject_text(text: &str, ignore_clipboard: bool) -> Result<(), String> {
@@ -39,7 +39,7 @@ pub fn inject_text(text: &str, ignore_clipboard: bool) -> Result<(), String> {
   }
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_os = "linux")))]
 fn inject_text_via_clipboard(text: &str) -> Result<(), String> {
   let mut clipboard = Clipboard::new().map_err(|e| format!("Clipboard init failed: {e}"))?;
   clipboard
@@ -71,8 +71,11 @@ fn inject_text_via_clipboard(text: &str) -> Result<(), String> {
 
 #[cfg(target_os = "macos")]
 mod macos {
+  use enigo::{Direction, Enigo, Key, Keyboard, Settings};
   use std::io::Write;
   use std::process::{Command, Stdio};
+  use std::thread;
+  use std::time::Duration;
 
   pub fn inject_text_via_clipboard(text: &str) -> Result<(), String> {
     let mut pbcopy = Command::new("pbcopy")
@@ -95,16 +98,19 @@ mod macos {
       return Err("pbcopy failed to set clipboard content".to_string());
     }
 
-    let output = Command::new("osascript")
-      .arg("-e")
-      .arg("tell application \"System Events\" to keystroke \"v\" using command down")
-      .output()
-      .map_err(|e| format!("Failed to run osascript: {e}"))?;
+    thread::sleep(Duration::from_millis(20));
 
-    if !output.status.success() {
-      let stderr = String::from_utf8_lossy(&output.stderr);
-      return Err(format!("macOS paste keystroke failed: {}", stderr.trim()));
-    }
+    let mut enigo =
+      Enigo::new(&Settings::default()).map_err(|e| format!("Input injection failed: {e}"))?;
+    enigo
+      .key(Key::Meta, Direction::Press)
+      .map_err(|e| format!("Failed to press Command key: {e}"))?;
+    enigo
+      .key(Key::Unicode('v'), Direction::Click)
+      .map_err(|e| format!("Failed to press V key: {e}"))?;
+    enigo
+      .key(Key::Meta, Direction::Release)
+      .map_err(|e| format!("Failed to release Command key: {e}"))?;
 
     Ok(())
   }
