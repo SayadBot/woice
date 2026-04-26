@@ -172,8 +172,13 @@ pub(super) fn end_recording<R: Runtime>(
         play_error_sound();
       } else if !mode_output.final_text.trim().is_empty() {
         let _inject_guard = state.injection_lock.lock().unwrap();
-        let _ =
+        let err =
           crate::platform::injection::inject_text(mode_output.final_text.trim(), ignore_clipboard);
+
+        if let Err(e) = err {
+          eprintln!("Injection error: {}", e);
+          play_error_sound();
+        }
       }
     }
     let injection_completed_at = now_ms();
