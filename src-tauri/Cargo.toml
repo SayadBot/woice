@@ -39,12 +39,6 @@ sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio",
 uiautomation = "0.24.4"
 windows = { version = "0.58", features = ["Win32_Foundation", "Win32_UI_Controls", "Win32_UI_WindowsAndMessaging"] }
 
-[target.'cfg(target_os = "macos")'.dependencies]
-accessibility = "0.2.0"
-accessibility-sys = "0.2.0"
-core-foundation = "0.10"
-core-foundation-sys = "0.8"
-
 [target.'cfg(target_os = "linux")'.dependencies]
 atspi = { version = "0.29.0", default-features = false, features = ["connection", "proxies", "zbus"] }
 

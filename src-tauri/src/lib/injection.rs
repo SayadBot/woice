@@ -6,11 +6,35 @@ pub fn inject_text(text: &str, ignore_clipboard: bool) -> Result<(), String> {
     return Ok(());
   }
 
-  if ignore_clipboard {
-    return inject_text_without_clipboard(text);
+  #[cfg(target_os = "windows")]
+  {
+    if ignore_clipboard {
+      return windows::inject_text(text);
+    }
+
+    inject_text_via_clipboard(text)
   }
 
-  inject_text_via_clipboard(text)
+  #[cfg(target_os = "macos")]
+  {
+    let _ = ignore_clipboard;
+    inject_text_via_clipboard(text)
+  }
+
+  #[cfg(target_os = "linux")]
+  {
+    if ignore_clipboard {
+      return linux::inject_text(text);
+    }
+
+    inject_text_via_clipboard(text)
+  }
+
+  #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
+  {
+    let _ = ignore_clipboard;
+    inject_text_via_clipboard(text)
+  }
 }
 
 fn inject_text_via_clipboard(text: &str) -> Result<(), String> {
@@ -40,29 +64,6 @@ fn inject_text_via_clipboard(text: &str) -> Result<(), String> {
     .map_err(|e| e.to_string())?;
 
   Ok(())
-}
-
-fn inject_text_without_clipboard(text: &str) -> Result<(), String> {
-  #[cfg(target_os = "windows")]
-  {
-    windows::inject_text(text)
-  }
-
-  #[cfg(target_os = "macos")]
-  {
-    macos::inject_text(text)
-  }
-
-  #[cfg(target_os = "linux")]
-  {
-    linux::inject_text(text)
-  }
-
-  #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
-  {
-    let _ = text;
-    Err("Ignore clipboard is not supported on this platform".to_string())
-  }
 }
 
 #[cfg(target_os = "windows")]
@@ -221,132 +222,6 @@ mod windows {
     }
 
     let char_index = char_index as usize;
-    if char_index == 0 {
-      return Ok(0);
-    }
-
-    text
-      .char_indices()
-      .nth(char_index)
-      .map(|(index, _)| index)
-      .or_else(|| (char_index == text.chars().count()).then_some(text.len()))
-      .ok_or_else(|| "Text offset is outside the focused control contents".to_string())
-  }
-}
-
-#[cfg(target_os = "macos")]
-mod macos {
-  use accessibility::{AXAttribute, AXUIElement};
-  use accessibility_sys::{
-    kAXFocusedUIElementAttribute, kAXValueTypeCFRange, AXValueCreate, AXValueGetType,
-    AXValueGetTypeID, AXValueGetValue,
-  };
-  use core_foundation::{
-    base::{CFType, TCFType},
-    string::CFString,
-  };
-  use core_foundation_sys::base::CFRange;
-
-  pub fn inject_text(text: &str) -> Result<(), String> {
-    let system = AXUIElement::system_wide();
-    system
-      .set_messaging_timeout(1.5)
-      .map_err(|e| format!("Accessibility timeout setup failed: {e}"))?;
-
-    let focused = system
-      .attribute(&AXAttribute::<AXUIElement>::new(
-        &CFString::from_static_string(kAXFocusedUIElementAttribute),
-      ))
-      .map_err(|e| format!("Failed to resolve focused element: {e}"))?;
-
-    let value_attr = AXAttribute::<CFType>::value();
-    if !focused
-      .is_settable(&value_attr)
-      .map_err(|e| format!("Failed to inspect focused value mutability: {e}"))?
-    {
-      return Err("Focused target does not allow semantic value updates on macOS".to_string());
-    }
-
-    let current_value = focused
-      .attribute(&value_attr)
-      .map_err(|e| format!("Failed to read focused value: {e}"))?
-      .downcast::<CFString>()
-      .ok_or_else(|| "Focused target does not expose a string value on macOS".to_string())?
-      .to_string();
-
-    let selected_range = read_selected_text_range(&focused)?;
-    let start = usize::try_from(selected_range.location)
-      .map_err(|_| "Received negative macOS selection start".to_string())?;
-    let length = usize::try_from(selected_range.length)
-      .map_err(|_| "Received negative macOS selection length".to_string())?;
-    let end = start.saturating_add(length);
-
-    let start_index = char_to_byte_index(&current_value, start)?;
-    let end_index = char_to_byte_index(&current_value, end)?;
-
-    let mut next =
-      String::with_capacity(current_value.len() - (end_index - start_index) + text.len());
-    next.push_str(&current_value[..start_index]);
-    next.push_str(text);
-    next.push_str(&current_value[end_index..]);
-
-    focused
-      .set_attribute(&value_attr, CFString::new(&next).as_CFType())
-      .map_err(|e| format!("Failed to replace focused value: {e}"))?;
-
-    write_selected_text_range(&focused, start + text.chars().count())
-  }
-
-  fn read_selected_text_range(element: &AXUIElement) -> Result<CFRange, String> {
-    let attribute = AXAttribute::<CFType>::new(&CFString::from_static_string(
-      accessibility_sys::kAXSelectedTextRangeAttribute,
-    ));
-    let value = element
-      .attribute(&attribute)
-      .map_err(|e| format!("Failed to read selected text range: {e}"))?;
-
-    unsafe {
-      if AXValueGetType(value.as_CFTypeRef() as _) != kAXValueTypeCFRange {
-        return Err("Focused target does not expose a text range on macOS".to_string());
-      }
-
-      let mut range = CFRange::init(0, 0);
-      if !AXValueGetValue(
-        value.as_CFTypeRef() as _,
-        kAXValueTypeCFRange,
-        &mut range as *mut _ as _,
-      ) {
-        return Err("Failed to decode selected text range on macOS".to_string());
-      }
-
-      Ok(range)
-    }
-  }
-
-  fn write_selected_text_range(element: &AXUIElement, caret_offset: usize) -> Result<(), String> {
-    let attribute = AXAttribute::<CFType>::new(&CFString::from_static_string(
-      accessibility_sys::kAXSelectedTextRangeAttribute,
-    ));
-    if !element
-      .is_settable(&attribute)
-      .map_err(|e| format!("Failed to inspect selected text range mutability: {e}"))?
-    {
-      return Ok(());
-    }
-
-    let range = CFRange::init(caret_offset as isize, 0);
-    let value = unsafe { AXValueCreate(kAXValueTypeCFRange, &range as *const _ as _) };
-    if value.is_null() {
-      return Err("Failed to create caret range value on macOS".to_string());
-    }
-
-    let range_value = unsafe { CFType::wrap_under_create_rule(value.cast()) };
-    element
-      .set_attribute(&attribute, range_value)
-      .map_err(|e| format!("Failed to restore caret position: {e}"))
-  }
-
-  fn char_to_byte_index(text: &str, char_index: usize) -> Result<usize, String> {
     if char_index == 0 {
       return Ok(0);
     }
