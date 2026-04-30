@@ -236,33 +236,6 @@ export function SettingsPage() {
               )}
             />
           </div>
-
-          <div className="basis-full">
-            <FormField
-              control={form.control}
-              name="ignoreClipboard"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <FormLabel className="text-sm">Ignore clipboard</FormLabel>
-
-                    <FormDescription className="text-xs">
-                      Use direct OS text insertion instead of the clipboard.
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={(checked) => {
-                        field.onChange(checked)
-                        triggerSubmit()
-                      }}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
         </section>
       </form>
     </Form>

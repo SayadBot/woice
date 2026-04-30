@@ -23,8 +23,6 @@ pub struct SettingsConfig {
   #[serde(default)]
   pub start_on_login: bool,
   #[serde(default)]
-  pub ignore_clipboard: bool,
-  #[serde(default)]
   pub use_env: bool,
 }
 
@@ -54,7 +52,6 @@ pub fn load_user_config<R: Runtime>(app: &AppHandle<R>) -> Result<UserConfig, St
         "hotkey": "Ctrl+Shift+Space",
         "language": "en",
         "startOnLogin": false,
-        "ignoreClipboard": false,
         "useEnv": false
       }
     });

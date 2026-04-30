@@ -12,7 +12,6 @@ export const settingsSchema = z.object({
 
   hotkey: z.string().default('Ctrl+Shift+Space'),
   startOnLogin: z.boolean().default(false),
-  ignoreClipboard: z.boolean().default(false),
 })
 
 export const configSchema = z.object({
@@ -25,7 +24,6 @@ export const configSchema = z.object({
 
     hotkey: 'Ctrl+Shift+Space',
     startOnLogin: false,
-    ignoreClipboard: false,
   }),
 })
 

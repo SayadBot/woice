@@ -39,7 +39,6 @@ pub struct RecordingSession {
   pub groq_api_key: String,
   pub whisper_model: String,
   pub language: String,
-  pub ignore_clipboard: bool,
   pub started_at: i64,
   pub recording_started_at: i64,
   pub recorder: RecorderHandle,
