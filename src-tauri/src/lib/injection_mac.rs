@@ -1,11 +1,10 @@
-use std::io::Write;
-use std::process::{Command, Stdio};
-
 use core_foundation::base::TCFType;
 use core_foundation::boolean::CFBoolean;
 use core_foundation::dictionary::CFDictionary;
 use core_foundation::string::CFString;
 use core_graphics::event_source::CGEventSourceStateID;
+use std::io::Write;
+use std::process::{Command, Stdio};
 
 pub fn inject_text(text: &str) -> Result<(), String> {
   if text.is_empty() {
